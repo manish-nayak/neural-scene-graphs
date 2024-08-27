@@ -47,12 +47,26 @@ def _convert_to_float(val):
             ValueError('Is neither float nor boolean: ' + val)
 
 
-def _get_kitti_information(path):
-     f = open(path, 'r')
-     c = f.read()
-     c = c.split("\n", 1)[1]
-     return np.array([[_convert_to_float(j) for j in i.split(' ')] for i in c.splitlines()])
+# def _get_kitti_information(path):
+#      f = open(path, 'r')
+#      c = f.read()
+#      c = c.split("\n", 1)[1]
+#      return np.array([[_convert_to_float(j) for j in i.split(' ')] for i in c.splitlines()])
 
+def _get_kitti_information(path):
+    with open(path, 'r') as f:
+        c = f.read()
+    lines = c.splitlines()[1:]  # Skip the header line
+    data = []
+    for line in lines:
+        if ',' in line:
+            delimiter = ','
+        else:
+            delimiter = ' '
+        values = line.split(delimiter)
+        processed_values = [_convert_to_float(value) for value in values]
+        data.append(processed_values)
+    return np.array(data)
 
 def _get_scene_objects(basedir):
     """

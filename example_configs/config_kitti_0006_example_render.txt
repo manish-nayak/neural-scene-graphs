@@ -30,7 +30,7 @@ render_only=True
 # bckg_only=True
 # obj_only=True
 # white_bkgd=True
-# manipulate=handcrafted_set_06
+manipulate=rotate
 
 # Scene06
 near_plane=.5
@@ -38,4 +38,4 @@ far_plane=150.
 
 # No ego motion + driving cars
 first_frame=65
-last_frame=120
+last_frame=85

@@ -28,6 +28,7 @@ plane_type=uniform
 # Render Pass
 # render_test = False
 # render_only = True
+random_seed = 100
 
 # bckg_only=False
 # obj_only=False
@@ -38,5 +39,5 @@ near_plane=.5
 far_plane=110.
 
 # No ego motion + driving cars
-first_frame=110
-last_frame=112
+first_frame=100 #65 #10
+last_frame=120 #120 #12

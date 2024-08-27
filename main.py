@@ -1662,9 +1662,12 @@ def train():
     print('TEST views are', i_test)
     print('VAL views are', i_val)
 
+    # Ensure the directory exists
+    summary_dir = os.path.join(basedir, 'summaries', expname)
+    os.makedirs(summary_dir, exist_ok=True)
+
     # Summary writers
-    writer = tf.contrib.summary.create_file_writer(
-        os.path.join(basedir, 'summaries', expname))
+    writer = tf.summary.create_file_writer(summary_dir)
     writer.set_as_default()
 
     for i in range(start, N_iters):
@@ -1779,20 +1782,23 @@ def train():
         if i % args.i_print == 0 or i < 10:
             print(expname, i, psnr.numpy(), loss.numpy(), global_step.numpy())
             print('iter time {:.05f}'.format(dt))
-            with tf.contrib.summary.record_summaries_every_n_global_steps(args.i_print):
-                tf.contrib.summary.scalar('loss', loss)
-                tf.contrib.summary.scalar('psnr', psnr)
-                # if args.N_importance > 0:
-                #     tf.contrib.summary.scalar('psnr0', psnr0)
-                # else:
-                #     tf.contrib.summary.histogram('tran', trans)
 
-                if args.latent_size > 0:
-                    for latent_vector_sum in list(render_kwargs_train['latent_vector_dict'].values()):
-                        tf.contrib.summary.histogram(
-                            latent_vector_sum.name,
-                            latent_vector_sum.value(),
+            if global_step % args.i_print == 0:
+                with writer.as_default():
+                    tf.summary.scalar('loss', loss, step=global_step)
+                    tf.summary.scalar('psnr', psnr, step=global_step)
+                    tf.summary.histogram('tran', trans, step=global_step)
+                    if args.N_importance > 0:
+                        tf.summary.scalar('psnr0', psnr0, step=global_step)
+                    
+                    if args.latent_size > 0:
+                        for latent_vector_sum in list(render_kwargs_train['latent_vector_dict'].values()):
+                            tf.summary.histogram(
+                                latent_vector_sum.name,
+                                latent_vector_sum.value(),
+                                step=global_step
                         )
+                    writer.flush()
 
             if i % args.i_img == 0 and not i == 0: # and not args.debug_local:
 
@@ -1831,26 +1837,27 @@ def train():
                     os.makedirs(testimgdir, exist_ok=True)
                 imageio.imwrite(os.path.join(testimgdir, '{:06d}.png'.format(i)), to8b(rgb))
 
-                with tf.contrib.summary.record_summaries_every_n_global_steps(args.i_img):
-
-                    tf.contrib.summary.image('rgb', to8b(rgb)[tf.newaxis])
-                    tf.contrib.summary.image(
-                        'disp', disp[tf.newaxis, ..., tf.newaxis])
-                    tf.contrib.summary.image(
-                        'acc', acc[tf.newaxis, ..., tf.newaxis])
-
-                    tf.contrib.summary.scalar('psnr_holdout', psnr)
-                    tf.contrib.summary.image('rgb_holdout', target[tf.newaxis])
+                # Custom condition to record summaries every n global steps
+                writer = tf.summary.create_file_writer(summary_dir)
+                if global_step % args.i_img == 0:
+                    with writer.as_default():
+                        print('Size of: ', to8b(rgb)[tf.newaxis].shape)
+                        tf.summary.image('rgb', to8b(rgb)[tf.newaxis], step=global_step)
+                        tf.summary.image('disp', disp[tf.newaxis, ..., tf.newaxis], step=global_step)
+                        tf.summary.image('acc', acc[tf.newaxis, ..., tf.newaxis], step=global_step)
+                        tf.summary.scalar('psnr_holdout', psnr, step=global_step)
+                        tf.summary.image('rgb_holdout', target[tf.newaxis], step=global_step)
+                        writer.flush()
 
                 if args.N_importance > 0:
 
-                    with tf.contrib.summary.record_summaries_every_n_global_steps(args.i_img):
-                        tf.contrib.summary.image(
-                            'rgb0', to8b(extras['rgb0'])[tf.newaxis])
-                        tf.contrib.summary.image(
-                            'disp0', extras['disp0'][tf.newaxis, ..., tf.newaxis])
-                        tf.contrib.summary.image(
-                            'z_std', extras['z_std'][tf.newaxis, ..., tf.newaxis])
+                    # Custom condition to record summaries every n global steps
+                    if global_step % args.i_img == 0:
+                        with writer.as_default():
+                            tf.summary.image('rgb0', to8b(extras['rgb0'])[tf.newaxis], step=global_step)
+                            tf.summary.image('disp0', extras['disp0'][tf.newaxis, ..., tf.newaxis], step=global_step)
+                            tf.summary.image('z_std', extras['z_std'][tf.newaxis, ..., tf.newaxis], step=global_step)
+                            writer.flush()    
 
         global_step.assign_add(1)
 

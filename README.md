@@ -31,7 +31,7 @@ conda create -n neural_scene_graphs --file requirements.txt -c conda-forge -c me
 conda activate neural_scene_graphs
 cd neural-scene-graphs
 bash download_virtual_kitti.sh
-python main.py --config example_configs/config_vkitti2_Scene06.py
+python main.py --config example_configs/config_vkitti2_Scene06.txt
 tensorboard --logdir=example_weights/summaries --port=6006
 ```
 #### Render a pretrained KITTI Scene from a trained Scene Graph Models

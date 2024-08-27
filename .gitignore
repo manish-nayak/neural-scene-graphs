@@ -1,6 +1,6 @@
 /data/
 /example_configs/archive/
-/example_weights/archive/
+/example_weights/
 /od_legacy/
 /paper_ablations/
 /paper_configs_kitti_tracking/
@@ -21,4 +21,6 @@ axcana.egg-info
 *.blg
 *.gz
 *.avi
-/example_weights/
+/logs/
+/logs_archived/
+kitti_tracking_0006_example/

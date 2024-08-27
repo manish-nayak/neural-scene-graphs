@@ -1,5 +1,5 @@
 # conda create -n neural_scene_graphs --file requirements.txt -c conda-forge -c menpo
-python=3.6
+python=3.5
 pip
 cudatoolkit=10.0.130
 tensorflow-gpu==1.15
@@ -8,7 +8,7 @@ matplotlib
 imageio
 imageio-ffmpeg
 configargparse
-imagemagick
+# imagemagick
 pillow
 opencv3
 

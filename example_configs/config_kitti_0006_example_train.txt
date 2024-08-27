@@ -5,8 +5,8 @@ dataset_type = kitti
 
 lrate=5e-4
 lrate_decay=250
-# chunk= 131072
-# netchunk= 131072
+chunk= 16384 # 32768
+netchunk= 32768 # 65536
 
 N_rand = 8192
 N_samples = 6
@@ -32,4 +32,4 @@ far_plane=150.
 
 # No ego motion + driving cars
 first_frame=65
-last_frame=120
+last_frame=85
