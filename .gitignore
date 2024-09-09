@@ -24,3 +24,5 @@ axcana.egg-info
 /logs/
 /logs_archived/
 kitti_tracking_0006_example/
+conference_room_data_log_images/
+metis_scripts/*.mat

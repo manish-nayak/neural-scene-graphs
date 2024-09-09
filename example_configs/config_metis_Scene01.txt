@@ -1,7 +1,7 @@
-expname = vkitti2_Scene06_example
+expname = metis_scene01
 basedir = ./logs
-datadir = ./data/vkitti2/Scene06/clone
-dataset_type = vkitti
+datadir = ./data/metis_vkitti/scene01
+dataset_type = metis
 
 lrate=5e-4
 lrate_decay=250
@@ -36,8 +36,8 @@ random_seed = 100
 
 # Scene06
 near_plane=.5
-far_plane=110.
+far_plane=20.
 
 # No ego motion + driving cars
-first_frame=0 #100 #65 #10
-last_frame=4 #120 #120 #12
+first_frame=0
+last_frame=4

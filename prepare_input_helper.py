@@ -18,7 +18,7 @@ def extract_object_information(args, visible_objects, objects_meta):
         obj_properties [n_input_frames, n_max_objects, n_object_properties]: Object properties per frame
         add_input_rows: additional input rows to the network
     '''
-    if args.dataset_type == 'vkitti':
+    if args.dataset_type == 'vkitti' or args.dataset_type == 'metis':
         # [n_frames, n_max_obj, xyz+track_id+ismoving+0]
         obj_state = visible_objects[:, :, [7, 8, 9, 2, -1]]
 
@@ -117,6 +117,7 @@ def plane_bounds(poses, plane_type, near, far, N_samples):
         pose_dist = max_pose_dist + 1e-9
     else:
         pose_dist = np.linalg.norm(poses[0:n_left - 1, :3, -1] - poses[1:n_left, :3, -1], axis=1)
+        pose_dist = pose_dist + 1e-9
 
     if plane_type == 'uniform':
         # Ensure in fornt of any point are equaly or more planes than Sample+Importnace
@@ -420,7 +421,10 @@ def resample_rays(rays_rgb, rays_bckg, obj_meta_tensor, objects_meta, scene_obje
 
             # Manually add support for objects not present enough in specific datasets e.g. pedestrians in KITTI sequences
             if objects_meta[_id_hit][4] == 2 or objects_meta[_id_hit][4] == 1:
-                _support_factor = class_multiplier[2]
+                if (len(class_multiplier) == 2):
+                    _support_factor = class_multiplier[1]
+                else:
+                    _support_factor = class_multiplier[2]
                 print('Adding Truck and Van support Factor', _support_factor)
                 _hit_factor *= _support_factor
             if objects_meta[_id_hit][4] == 4:
@@ -434,6 +438,14 @@ def resample_rays(rays_rgb, rays_bckg, obj_meta_tensor, objects_meta, scene_obje
 
 
             _hit_factor = np.minimum(_hit_factor, 1e1)
+
+            # Ensure all arrays in _new_rays_rgb[_id_hit] have the same shape
+            _new_rays_rgb_homogeneous = [np.asarray(ray) for ray in _new_rays_rgb[_id_hit]]
+            
+            # Check if all arrays have the same shape
+            array_shapes = [ray.shape for ray in _new_rays_rgb_homogeneous]
+            # print(array_shapes)
+            
             _eq_sz_rays = np.repeat(np.concatenate(np.array(_new_rays_rgb[_id_hit]), axis=0), _hit_factor, axis=0)
             rays_rgb.append(np.array(_eq_sz_rays))
 

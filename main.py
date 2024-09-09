@@ -5,6 +5,8 @@ os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
 from neural_scene_graph_helper import *
 from data_loader.load_vkitti import load_vkitti_data
+from data_loader.load_metis import load_metis_data
+
 from data_loader.load_kitti import load_kitti_data, plot_kitti_poses, tracking2txt
 from prepare_input_helper import *
 from neural_scene_graph_manipulation import *
@@ -1343,6 +1345,29 @@ def train():
         render_time_stamp = None
 
         print('Loaded vkitti', images.shape,
+              #render_poses.shape,
+              hwf,
+              args.datadir)
+        if visible_objects is not None:
+            args.max_input_objects = visible_objects.shape[1]
+        else:
+            args.max_input_objects = 0
+
+        i_train, i_val, i_test = i_split
+
+        near = args.near_plane
+        far = args.far_plane
+
+    elif args.dataset_type == 'metis':
+        # TODO: Class by integer instead of hot-one-encoding for latent encoding in visible object
+        images, instance_segm, poses, frame_id, render_poses, hwf, i_split, visible_objects, objects_meta, render_objects, bboxes = \
+            load_metis_data(args.datadir,
+                             selected_frames=[args.first_frame[0], args.last_frame[0]] if args.last_frame[0] >= 0 else -1,
+                             use_obj=args.use_object_properties,
+                             row_id=True if args.object_setting == 0 or args.object_setting == 1 else False,)
+        render_time_stamp = None
+
+        print('Loaded metis', images.shape,
               #render_poses.shape,
               hwf,
               args.datadir)
