@@ -1,0 +1,42 @@
+expname = conf_room_multiple_boxes
+basedir = ./logs
+datadir = ./data/conf_room_boxes/multiple_boxes
+dataset_type = metis
+
+lrate=5e-4
+lrate_decay=250
+chunk=16384
+netchunk=32768
+
+N_rand = 8192
+N_samples = 8
+N_samples_obj = 10
+N_importance = 0
+latent_size=256
+latent_balance = 0.0001
+box_scale=1.3
+
+use_object_properties=True
+multires_obj=4
+
+use_viewdirs = True
+
+sampling_method=planes
+plane_type=uniform
+
+# Render Pass
+# render_test = False
+# render_only = True
+random_seed = 100
+
+# bckg_only=False
+# obj_only=False
+# white_bkgd=True
+
+# Scene06
+near_plane=.5
+far_plane=5.
+
+# No ego motion + driving cars
+first_frame=2
+last_frame=6
